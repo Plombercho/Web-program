@@ -5,31 +5,24 @@ session_start();
 
 if(isset($_POST['submit'])){
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password']; // i get the input from the user down (whatever he/she types)  
+    $password = $_POST['password'];
 
-    // Check if the user is an admin
     $select_admin = mysqli_query($conn, "SELECT * FROM `admin` WHERE email = '$email'") or die('Admin query failed');
 
     if(mysqli_num_rows($select_admin) > 0){
-        // Admin found, verify password
         $row = mysqli_fetch_assoc($select_admin);
-        if(password_verify($password, $row['password'])) {  //seeing if the password that he/she types mathes the pass in the database (not hashed password!)
-            // Admin login successful
+        if(password_verify($password, $row['password'])) {  
             $_SESSION['admin_id'] = $row['id'];
             header('location: admin_dashboard.php');
             exit();
         }
     }
 
-
-    // Check if the user is a regular user
     $select_user = mysqli_query($conn, "SELECT * FROM `users` WHERE email = '$email'") or die('User query failed');
 
     if(mysqli_num_rows($select_user) > 0){
-        // User found, verify password
         $row = mysqli_fetch_assoc($select_user);
-        if(password_verify($password, $row['password'])) { {  //seeing if the password that he/she types mathes the pass in the database (not hashed password!)
-            // Regular user login successful
+        if(password_verify($password, $row['password'])) { {  
             $_SESSION['user_id'] = $row['id'];
             header('location: index.php');
             exit();
@@ -48,8 +41,6 @@ if(isset($_POST['submit'])){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-
-    <!-- css file link  -->
     <link rel="stylesheet" href="css/loginStyle.css">
 
 </head>
