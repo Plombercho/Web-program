@@ -9,23 +9,17 @@ $search_message = '';
 if (isset($_GET['search'])) {
     $search_term = $_GET['search'];
 
-    // Prepare and execute search query
     if (!empty($search_term)) {
         $search_query = "SELECT * FROM items WHERE (name LIKE ? OR type LIKE ?) AND type = 'car_tool'";
         $search_statement = mysqli_prepare($conn, $search_query);
 
         if ($search_statement) {
-            // Bind parameters
             $search_param = "%$search_term%";
             mysqli_stmt_bind_param($search_statement, "ss", $search_param, $search_param);
 
-            // Execute query
             mysqli_stmt_execute($search_statement);
 
-            // Get search results
             $search_result = mysqli_stmt_get_result($search_statement);
-
-            // Output search results
             if (mysqli_num_rows($search_result) > 0) {
                 $search_message = "резултати от търсене на '$search_term'";
             } else {
@@ -165,7 +159,6 @@ if (isset($_GET['search'])) {
                     } else {
                         echo '<a href="cart_add.php?id=' . $row['id'] . '" class="btn btn-block btn-primary" name="add" value="add">Добави в количката</a>';
                     }
-                    // You can add additional conditions or buttons based on your requirements here
                     echo '</div>';
                     echo '</div>';
                     echo '</div>';
@@ -221,7 +214,6 @@ if (isset($_GET['search'])) {
         }
         ?>
     </div>
-    <!-- END LAYER FOR SELL-->
 
     <?php require 'footer.php'; ?>
 
