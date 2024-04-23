@@ -6,10 +6,8 @@ if(isset($_POST['submit'])){
 
    $name = mysqli_real_escape_string($conn, $_POST['name']);
    $email = mysqli_real_escape_string($conn, $_POST['email']);
-   // $pass = mysqli_real_escape_string($conn, md5($_POST['password'])); //hashed with md5 (lower security)
    $pass = $_POST['password'];
    $pass_hash = password_hash($pass, PASSWORD_DEFAULT);
-   // $cpass = mysqli_real_escape_string($conn, md5($_POST['password'])); //hashed with md5 (lower security)
    $cpass = $_POST['cpassword'];
    $cpass_hash = password_hash($cpass, PASSWORD_DEFAULT);
    $image = $_FILES['image']['name'];
@@ -50,8 +48,6 @@ if(isset($_POST['submit'])){
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>register</title>
-
-   <!-- custom css file link  -->
    <link rel="stylesheet" href="css/loginStyle.css">
 
 </head>
