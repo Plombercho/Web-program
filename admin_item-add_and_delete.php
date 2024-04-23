@@ -1,28 +1,23 @@
 <?php
 session_start();
-require 'dbConnection.php'; // Include the database connection file
+require 'dbConnection.php';
 
-// Check if the form is submitted for item removal
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_item'])) {
     $itemIdToRemove = $_POST['item_id'];
 
-    // Prepare and execute SQL statement to remove the item
     $stmt = $conn->prepare("DELETE FROM items WHERE id = ?");
     $stmt->bind_param("i", $itemIdToRemove);
     $stmt->execute();
 
-    // Check if the item is removed successfully
     if ($stmt->affected_rows > 0) {
         $message = "Item removed successfully.";
     } else {
         $message = "Failed to remove item.";
     }
 
-    // Close statement
     $stmt->close();
 }
 
-// Check if the form is submitted for item addition
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     // Collect form data
     $name = $_POST['name'];
@@ -30,13 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $description = $_POST['description'];
     $price = $_POST['price'];
 
-    // Handle image upload
-    $targetDirectory = "images/"; // Specify the target directory
-    $targetFile = $targetDirectory . basename($_FILES["image"]["name"]); // Specify the file path
+    $targetDirectory = "images/";
+    $targetFile = $targetDirectory . basename($_FILES["image"]["name"]);
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
-    // Check if image file is a actual image or fake image
     if (isset($_POST["submit"])) {
         $check = getimagesize($_FILES["image"]["tmp_name"]);
         if ($check !== false) {
@@ -47,13 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         }
     }
 
-    // Check file size
     if ($_FILES["image"]["size"] > 500000) {
         $message = "Sorry, your file is too large.";
         $uploadOk = 0;
     }
 
-    // Allow certain file formats
     if (
         $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
         && $imageFileType != "gif"
@@ -62,34 +53,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         $uploadOk = 0;
     }
 
-    // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
         $message = "Sorry, your file was not uploaded.";
-        // if everything is ok, try to upload file
     } else {
-        // Fetch the last item ID from the items table
         $lastItemIdQuery = "SELECT MAX(id) as last_id FROM items";
         $lastItemIdResult = $conn->query($lastItemIdQuery);
         $lastItemIdRow = $lastItemIdResult->fetch_assoc();
         $lastItemId = $lastItemIdRow['last_id'];
 
-        // Increment the last item ID to generate the new item ID
         $newItemId = $lastItemId + 1;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            // Prepare and execute SQL statement
             $stmt = $conn->prepare("INSERT INTO items (id, name, type, description, image_path, price) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("issssd", $newItemId, $name, $type, $description, $targetFile, $price);
             $stmt->execute();
 
-            // Check if the item is added successfully
             if ($stmt->affected_rows > 0) {
                 $message = "Item added successfully.";
             } else {
                 $message = "Failed to add item.";
             }
 
-            // Close statement
             $stmt->close();
         } else {
             $message = "Sorry, there was an error uploading your file.";
@@ -97,33 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     }
 }
 
-// // // Check if the form is submitted for item update
-// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
-//     // Collect form data
-//     $itemIdToUpdate = $_POST['id'];
-//     $name = $_POST['name'];
-//     $type = $_POST['type'];
-//     $description = $_POST['description'];
-//     $price = $_POST['price'];
-
-//     // Prepare and execute SQL statement to update the item
-//     $stmt = $conn->prepare("UPDATE items SET name = ?, type = ?, description = ?, price = ? WHERE id = ?");
-//     $stmt->bind_param("ssssi", $name, $type, $description, $price, $itemIdToUpdate);
-//     $stmt->execute();
-
-//     // Check if the item is updated successfully
-//     if ($stmt->affected_rows > 0) {
-//         $message = "Item updated successfully.";
-//     } else {
-//         $message = "Failed to update item.";
-//     }
-// }
-
-// Fetch all items from the database
 $sql = "SELECT * FROM items";
 $result = $conn->query($sql);
 
-// Close connection
 $conn->close();
 ?>
 
@@ -291,7 +251,6 @@ $conn->close();
                         echo "<form method='post' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "'>";
                         echo "<input type='hidden' name='item_id' value='" . $row['id'] . "'>";
                         echo "<input style='background-color: red' type='submit' name='remove_item' value='Изтрий'>";
-                       // echo "<input style='background-color: red; margin-top: 30px' type='submit' name='update' value='Промени'>"; //doesn't work for now!
                         echo "</form>";
                         echo "</td>";
                         echo "</tr>";
