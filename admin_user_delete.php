@@ -1,65 +1,53 @@
 <?php
 session_start();
-require 'dbConnection.php'; // Include the database connection file
+require 'dbConnection.php';
 
-// Delete user if delete request is sent
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['delete_user'])) {
         $user_id = $_POST['user_id'];
         $delete_query = "DELETE FROM users WHERE id = $user_id";
         mysqli_query($conn, $delete_query);
-        // You might want to delete related records from other tables here
     } elseif (isset($_POST['delete_admin'])) {
         $admin_id = $_POST['admin_id'];
         $delete_query = "DELETE FROM admin WHERE admin_id = $admin_id";
         mysqli_query($conn, $delete_query);
         
         // Reset auto-increment counter for admin_id
-        mysqli_query($conn, "ALTER TABLE admin AUTO_INCREMENT = 1"); //this is here, because i have problem with admin id-s, after deleteing amdmin, his/her id is not deleted
+        mysqli_query($conn, "ALTER TABLE admin AUTO_INCREMENT = 1");
         
         // Redirect to the same page to prevent form resubmission
         header("Location: {$_SERVER['PHP_SELF']}");
         exit;
-        // You might want to delete related records from other tables here
     }
 }
 
-// Fetch users from the database
 $query_users = "SELECT * FROM users";
 $result_users = mysqli_query($conn, $query_users);
 
-// Store users in an array
 $users = array();
 while ($row_users = mysqli_fetch_assoc($result_users)) {
     $users[] = $row_users;
 }
 
-// Fetch administrators from the database
 $query_admins = "SELECT * FROM admin";
 $result_admins = mysqli_query($conn, $query_admins);
 
-// Store administrators in an array
 $admins = array();
 while ($row_admins = mysqli_fetch_assoc($result_admins)) {
     $admins[] = $row_admins;
 }
 
-// Create new administrator if add_admin request is sent
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['add_admin'])) {
         $admin_name = $_POST['admin_name'];
         $admin_email = $_POST['admin_email'];
-        // $admin_password = mysqli_real_escape_string($conn, md5($_POST['admin_password'])); 
-        $admin_password = $_POST['admin_password'];    // (it is admin_password because if it's not it try to hash user input password (maybe), but main reason in the id down in the input)
-
-        // Hash the password                                                         //this password hesh is using Bcrypto
+        $admin_password = $_POST['admin_password']; 
+        // Hash the password
         $hashed_password = password_hash($admin_password, PASSWORD_DEFAULT);
 
-        //Insert new administrator into the database
         $insert_query = "INSERT INTO admin (name, email, password) VALUES ('$admin_name', '$admin_email', '$hashed_password')";
         mysqli_query($conn, $insert_query);
 
-        // Redirect to the same page to prevent form resubmission
         header("Location: {$_SERVER['PHP_SELF']}");
         exit;
     }
@@ -71,17 +59,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <title>Admin Dashboard</title>
-    <!-- Add your CSS stylesheets or link to external stylesheets here -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- icons -->
     <link rel="stylesheet" href="css/style.css">
 
     <style>
-        /* Basic CSS Styles */
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -156,7 +139,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
-
 <body>
     <div class="wrap">
         <?php
@@ -174,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="admin_email" name="admin_email" required><br><br>
 
             <label for="admin_password">Password:</label>
-            <input type="password" id="admin_password" name="admin_password" required><br><br> <!--(here is why upper thing shuld be admin_password instead only password because my id is admin password)-->
+            <input type="password" id="admin_password" name="admin_password" required><br><br>
 
             <button type="submit" name="add_admin">Add Admin</button>
         </form>
