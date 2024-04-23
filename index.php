@@ -10,7 +10,6 @@
     rel="stylesheet">
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <!-- icons -->
 
   <link rel="stylesheet" href="css/animate.css">
 
@@ -74,7 +73,7 @@
         </div>
       </div>
     </nav>
-    <!-- END nav and header-->
+    <!-- End nav and header-->
     <!-- Slider-->
     <div class="hero-wrap">
       <div class="home-slider owl-carousel">
@@ -208,9 +207,6 @@
         </div>
       </div>
     </section>
-
-    <!-- END car services-->
-    <!-- If i want to get rid of the animations i have to delete animated.css and this class name -> ftco-animate -->
     <section class="ftco-section">
       <div class="container">
         <div class="row justify-content-center pb-5 mb-3">
@@ -290,9 +286,6 @@
         </div>
       </div>
     </section>
-
-    <!-- END car parts-->
-
     <section class="ftco-counter" id="section-counter">
       <div class="container">
         <div class="row">
