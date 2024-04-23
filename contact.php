@@ -2,32 +2,25 @@
 session_start();
 require 'dbConnection.php';
 
-// Проверка дали потребителят е влязъл в системата
 if (isset($_SESSION['user_id'])) {
 	$user_id = $_SESSION['user_id'];
 } else {
-	// Ако потребителят не е влязъл в системата, може да направите нещо като пренасочване към страницата за вход
 	header("Location: login.php");
-	exit; // Завършете изпълнението на скрипта
+	exit;
 }
 
-// Проверка дали формата е изпратена
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	// Извличане на данните от формата
 	$name = $_POST['name'];
 	$email = $_POST['email'];
 	$subject = $_POST['subject'];
 	$message = $_POST['message'];
 
-	// Заявка за вмъкване на съобщението в базата данни
 	$insert_query = "INSERT INTO messages (user_id, name, email, subject, message) VALUES (?, ?, ?, ?, ?)";
 	$insert_result = mysqli_query($conn, $insert_query);
 
 	if ($insert_result) {
-		// Съобщение за успешно изпратено съобщение
 		echo "Съобщението беше успешно изпратено.";
 	} else {
-		// Грешка при изпращане на съобщение
 		echo "Възникна грешка при изпращане на съобщението.";
 	}
 }
