@@ -4,7 +4,6 @@ require 'dbConnection.php';
 
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-// Handle form submission to update quantity
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the 'quantity' array is set in $_POST
     if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
@@ -15,7 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $quantity = intval($quantity);
 
             if ($itemId && $quantity > 0) {
-                // Update the quantity in the database
                 $update_query = "UPDATE users_items SET quantity = $quantity WHERE item_id = $itemId AND user_id = $user_id";
                 mysqli_query($conn, $update_query) or die(mysqli_error($conn));
             }
@@ -23,7 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Fetch user's cart items from the items table based on their type
 $user_cart_query = "
     SELECT i.id, i.name, i.type, i.image_path, i.price, ui.quantity
     FROM items i 
@@ -31,35 +28,23 @@ $user_cart_query = "
     WHERE ui.user_id = $user_id AND ui.status = 'Added to cart'
 ";
 
-$user_cart_result = mysqli_query($conn, $user_cart_query) or die(mysqli_error($conn)); // Ensure $conn is defined
+$user_cart_result = mysqli_query($conn, $user_cart_query) or die(mysqli_error($conn));
 
-// Fetch all cart items into an array
-$cart_items = []; // maybe unneccessary
+$cart_items = [];
 $total_price = 0;
 $total_quantity = 0;
 while ($row = mysqli_fetch_assoc($user_cart_result)) {
     $cart_items[] = $row;
-    $total_price += $row['price'] * $row['quantity']; // Update total price with quantity
+    $total_price += $row['price'] * $row['quantity'];
     $total_quantity += $row['quantity'];
 }
 
-// Check if the payment method is PayPal (maybe i don't need this)
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['paymentMethod']) && $_POST['paymentMethod'] === 'paypal') {
-    // If payment method is PayPal, redirect to PayPal payment page
-    header("Location: paypal_payment.php");
-    exit();
-}
-
-// Запазване на общата цена на количката в сесията
 $_SESSION['cart_total_price'] = isset($_SESSION['cart_total_price']) ? $_SESSION['cart_total_price'] + $total_price : $total_price;
 
-// Предположете, че $total_price съдържа общата цена на поръчката
 $new_total_payments = $total_price;
 
-// Актуализирайте общата сума на плащанията в базата данни
 $update_total_payments_query = "UPDATE users SET total_payments = total_payments + $new_total_payments WHERE id = $user_id";
 mysqli_query($conn, $update_total_payments_query) or die(mysqli_error($conn));
-
 ?>
 
 
@@ -70,14 +55,10 @@ mysqli_query($conn, $update_total_payments_query) or die(mysqli_error($conn));
     <title>Cart</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- latest compiled and minified CSS -->
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
-    <!-- External CSS -->
     <link rel="stylesheet" href="css/style.css" type="text/css">
-    <!-- icon shows with this url-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        /* Basic CSS styles */
         input[type="text"],
         select {
             width: 100%;
@@ -177,12 +158,10 @@ mysqli_query($conn, $update_total_payments_query) or die(mysqli_error($conn));
             <div class="container-form">
                 <h2>Въведи информация</h2>
                 <form id="orderForm" method="post" onsubmit="return validatePayment()">
-                    <!-- Location input -->
                     <label for="location">Място:</label>
                     <input type="text" id="location" name="location" placeholder="Въведи място" required>
                     <label for="location">Улица:</label>
                     <input type="text" id="street" name="location" placeholder="Въведи улица" required>
-                    <!-- Payment method input -->
                     <label for="paymentMethod">Метод на плащане:</label>
                     <select id="paymentMethod" name="paymentMethod" required onchange="changeAction()">
                         <option value="">Избери</option>
@@ -195,7 +174,6 @@ mysqli_query($conn, $update_total_payments_query) or die(mysqli_error($conn));
                     <!-- Hidden field for total quantity -->
                     <input type="hidden" name="total_quantity" value="<?php echo $total_quantity; ?>">
 
-                    <!-- Submit button -->
                     <button type="submit">Поръчай</button>
                 </form>
 
@@ -261,8 +239,6 @@ mysqli_query($conn, $update_total_payments_query) or die(mysqli_error($conn));
             alert("Няма продукти в количката. Моля, добавете продукти преди да продължите.");
             return false;
         }
-        // You can add additional validation here if needed
-
         return true;
     }
 </script>
