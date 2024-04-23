@@ -45,7 +45,6 @@
 						</p>
 					</div>
 					<div class="col">
-						<!-- Profile dropdown -->
 						<div class="dropdown">
 							<a style="font-size: 22px" href="#" id="profileDropdown" data-toggle="dropdown">
 								<span class="fa fa-user-circle-o">Профил</span>
