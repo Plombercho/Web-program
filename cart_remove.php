@@ -1,20 +1,17 @@
 <?php
 session_start();
-require 'dbConnection.php'; // Include the database connection file
+require 'dbConnection.php';
 
-// Get the user ID
 $user_id = $_SESSION['user_id'];
 
 // Get the item ID from the URL parameter
 $item_id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
-// Validate item ID
 if (!$item_id) {
     echo "Invalid item ID.";
     exit;
 }
 
-// Check if the item exists in the user's cart
 $cart_item_query = "SELECT * FROM users_items WHERE user_id = $user_id AND item_id = $item_id AND status = 'Added to cart'";
 $cart_item_result = mysqli_query($conn, $cart_item_query);
 
@@ -23,7 +20,6 @@ if (!$cart_item_result || mysqli_num_rows($cart_item_result) == 0) {
     exit;
 }
 
-// Remove the item from the cart
 $remove_from_cart_query = "DELETE FROM users_items WHERE user_id = ? AND item_id = ? AND status = 'Added to cart'";
 $statement = mysqli_prepare($conn, $remove_from_cart_query);
 
