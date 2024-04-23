@@ -1,26 +1,17 @@
 <?php
 session_start();
-require 'dbConnection.php'; // Include the database connection file
-
-// Check if item ID is provided in the URL
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    // Redirect to some error page if item ID is not provided
-    header("Location: error.php");
-    exit;
-}
+require 'dbConnection.php';
 
 $item_id = $_GET['id'];
 
-// Fetch item details from the database based on the provided item ID
 $item_query = "
     SELECT *
     FROM items
     WHERE id = $item_id
 ";
 
-$item_result = mysqli_query($conn, $item_query) or die(mysqli_error($conn)); // Ensure $conn is defined
+$item_result = mysqli_query($conn, $item_query) or die(mysqli_error($conn));
 
-// Fetch item details
 $item = mysqli_fetch_assoc($item_result);
 ?>
 
@@ -53,12 +44,9 @@ $item = mysqli_fetch_assoc($item_result);
 
         .item-image {
             max-width: 100%;
-            /* Adjust maximum width as needed */
             max-height: 400px;
-            /* Set a maximum height for the image */
             border-radius: 10%;
             object-fit: contain;
-            /* Ensure the entire image is visible within the container */
         }
 
 
